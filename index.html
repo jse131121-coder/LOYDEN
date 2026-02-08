@@ -1,165 +1,175 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>LOYD Chat</title>
-
 <style>
-:root{
-  --bg:#f3f3f3;
-  --card:#ffffff;
-  --text:#222;
-  --bubble-me:#7b0000;
-  --bubble-other:#ffffff;
-}
-
-body.dark{
-  --bg:#111;
-  --card:#1b1b1b;
-  --text:#eaeaea;
-  --bubble-me:#8b0000;
-  --bubble-other:#2a2a2a;
-}
-
-/* NOW 테마 */
-body.now{
-  --bg:#f7f6f6;
-  --card:#ffffff;
-  --text:#1e1e1e;
-  --bubble-me:#e7e0c4;
-  --bubble-other:#e6d0da;
-}
-
-body{
-  margin:0;
-  font-family:system-ui;
-  background:var(--bg);
-  color:var(--text);
-}
-
-.topbar{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  padding:14px;
-  background:var(--card);
-  border-bottom:1px solid #ddd;
-}
-
-.circle{
-  width:36px;
-  height:36px;
-  border-radius:50%;
-  background:#ddd;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-weight:700;
-}
-
-.chat{
-  padding:14px;
-  height:70vh;
-  overflow:auto;
-}
-
-.msg{
-  margin:10px 0;
-  display:flex;
-}
-
-.msg.me{justify-content:flex-end}
-
-.bubble{
-  padding:10px 14px;
-  border-radius:18px;
-  max-width:70%;
-  word-break:keep-all;
-}
-
-.me .bubble{background:var(--bubble-me); color:#000}
-.other .bubble{background:var(--bubble-other)}
-
-.inputbox{
-  position:fixed;
-  bottom:0;
-  width:100%;
-  display:flex;
-  gap:10px;
-  padding:10px;
-  background:var(--card);
-  border-top:1px solid #ddd;
-}
-
-button{cursor:pointer}
-
-.settings{
-  position:fixed;
-  right:12px;
-  top:70px;
-  background:var(--card);
-  padding:12px;
-  border-radius:12px;
-  display:none;
-}
+body{font-family:Arial;margin:0;background:#e8e2df;font-size:13px}
+.phone{max-width:420px;margin:auto;background:#f6f2f1;height:100vh;display:flex;flex-direction:column}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:#efe9e7;border-bottom:1px solid #ddd}
+.circle{width:38px;height:38px;border-radius:50%;background:#ddd;display:flex;align-items:center;justify-content:center;font-weight:bold}
+.title{text-align:center;font-weight:bold}
+.notice{background:#e3e8ec;padding:8px 12px;font-size:12px;border-bottom:1px solid #ddd}
+.userbar{display:flex;gap:6px;justify-content:center;padding:6px;background:#f1ecea;border-bottom:1px solid #ddd}
+.userbar button{border:none;border-radius:14px;padding:4px 10px;font-size:11px;cursor:pointer;background:white}
+.chat{flex:1;padding:14px;overflow-y:auto}
+.message{display:flex;margin-bottom:12px}
+.message.left{justify-content:flex-start}
+.message.right{justify-content:flex-end}
+.msgWrap{display:flex;flex-direction:column}
+.nameRow{font-size:11px;margin-bottom:4px;display:flex;align-items:center;gap:6px}
+.nameRow img{width:28px;height:28px;border-radius:50%}
+.bubble{max-width:70%;padding:10px 14px;border-radius:16px;font-size:13px;word-break:keep-all;overflow-wrap:break-word}
+.left .bubble{background:#7c0b0b;color:white}
+.right .bubble{background:white;border:1px solid #7c0b0b;color:#7c0b0b}
+.inputBox{padding:10px;background:#efe9e7;border-top:1px solid #ddd}
+.inputInner{background:white;border-radius:20px;padding:8px 12px;display:flex;align-items:center}
+.inputInner input{flex:1;border:none;outline:none;font-size:13px}
+.sendBtn{background:#c89c9c;color:white;border:none;border-radius:16px;padding:6px 12px;margin-left:6px;cursor:pointer}
+.settings{position:fixed;right:10px;top:70px;background:white;padding:12px;border-radius:12px;box-shadow:0 4px 10px rgba(0,0,0,0.1);display:none;font-size:12px}
+body.now{background:#f7f6f6}
 </style>
 </head>
 <body>
 
+<div class="phone">
 <div class="topbar">
   <div class="circle">LOYD</div>
-  <div>One and Only</div>
-  <a href="#" class="circle">E</a>
+  <div class="title">One and Only</div>
+  <a href="#" id="linkBtn" class="circle">E</a>
+</div>
+
+<div class="notice" id="notice">📢 공지 - 필독</div>
+
+<div class="userbar">
+  <button onclick="setUser('SEORIN')">SEORIN</button>
+  <button onclick="setUser('HARI')">HARI</button>
+  <button onclick="setUser('ROSSY')">ROSSY</button>
+  <button onclick="setUser('DANA')">DANA</button>
+  <button onclick="toggleSettings()">⚙ 설정</button>
 </div>
 
 <div class="chat" id="chat"></div>
 
-<div class="inputbox">
-  <input id="msg" style="flex:1;padding:10px;border-radius:10px;border:1px solid #ccc" placeholder="LOYD 멤버들에게 하고 싶은 말을 입력해주세요" />
-  <button onclick="send()">보내기</button>
-  <button onclick="toggleSettings()">⚙</button>
+<div class="inputBox">
+  <div class="inputInner">
+    <input id="msg" placeholder="LOYD 멤버들에게 하고 싶은 말을 입력해주세요">
+    <button class="sendBtn" onclick="sendMsg()">보내기</button>
+  </div>
+</div>
 </div>
 
 <div class="settings" id="settings">
-  <div><b>테마</b></div>
+  <h4>프로필 설정</h4>
+  이름: <input id="nameInput"><br><br>
+  프사 업로드: <input type="file" id="imgInput"><br><br>
+  <button onclick="saveProfile()">저장</button>
+  <hr>
+  <h4>공지 설정</h4>
+  <input id="noticeInput">
+  <button onclick="changeNotice()">공지 변경</button>
+  <hr>
+  <h4>테마 설정</h4>
   <button onclick="setTheme('light')">화이트</button>
   <button onclick="setTheme('dark')">다크</button>
   <button onclick="setTheme('now')">NOW</button>
 </div>
 
 <script>
-const chat=document.getElementById('chat');
+let currentUser = localStorage.getItem('currentUser') || 'SEORIN';
+let messages = JSON.parse(localStorage.getItem('messages') || '[]');
+let users = JSON.parse(localStorage.getItem('users') || '{}');
 
-function send(){
-  const v=document.getElementById('msg').value;
-  if(!v) return;
-  const d=document.createElement('div');
-  d.className='msg me';
-  d.innerHTML='<div class="bubble">'+v+'</div>';
-  chat.appendChild(d);
-  document.getElementById('msg').value='';
+if(Object.keys(users).length===0){
+ users={
+  SEORIN:{img:'https://i.pravatar.cc/40?img=1',badge:'⭐',name:'SEORIN'},
+  HARI:{img:'https://i.pravatar.cc/40?img=2',badge:'💎',name:'HARI'},
+  ROSSY:{img:'https://i.pravatar.cc/40?img=3',badge:'✔',name:'ROSSY'},
+  DANA:{img:'https://i.pravatar.cc/40?img=4',badge:'🔥',name:'DANA'}
+ };
+}
+
+function renderChat(){
+ const chat=document.getElementById('chat');
+ chat.innerHTML='';
+ messages.forEach(m=>{
+  const wrap=document.createElement('div');
+  const side = m.sender === currentUser ? 'right':'left';
+  wrap.className='message '+side;
+  if(side==='left'){
+    wrap.innerHTML=`<div class='msgWrap'>
+        <div class='nameRow'><img src='${users[m.sender].img}'> ${users[m.sender].name} ${users[m.sender].badge}</div>
+        <div class='bubble'>${m.text}</div>
+      </div>`;
+  }else{
+    wrap.innerHTML=`<div class='bubble'>${m.text}</div>`;
+  }
+  chat.appendChild(wrap);
+ });
+}
+renderChat();
+
+function setUser(name){
+ currentUser=name;
+ localStorage.setItem('currentUser',name);
+ renderChat();
+}
+
+function sendMsg(){
+ const text=document.getElementById('msg').value;
+ if(!text) return;
+ messages.push({sender:currentUser,text});
+ localStorage.setItem('messages',JSON.stringify(messages));
+ document.getElementById('msg').value='';
+ renderChat();
 }
 
 function toggleSettings(){
-  const s=document.getElementById('settings');
-  s.style.display=s.style.display==='block'?'none':'block';
+ const s=document.getElementById('settings');
+ s.style.display = s.style.display==='block'?'none':'block';
+}
+
+function saveProfile(){
+ const name=document.getElementById('nameInput').value;
+ const file=document.getElementById('imgInput').files[0];
+ if(name) users[currentUser].name=name;
+ if(file){
+  const reader=new FileReader();
+  reader.onload=function(e){
+    users[currentUser].img=e.target.result;
+    localStorage.setItem('users',JSON.stringify(users));
+    renderChat();
+  };
+  reader.readAsDataURL(file);
+ }else{
+  localStorage.setItem('users',JSON.stringify(users));
+ }
+}
+
+function changeNotice(){
+ const text=document.getElementById('noticeInput').value;
+ document.getElementById('notice').innerText='📢 '+text;
+ localStorage.setItem('notice',text);
 }
 
 function setTheme(t){
-  document.body.classList.remove('dark','now');
-  if(t==='dark') document.body.classList.add('dark');
-  if(t==='now') document.body.classList.add('now');
-  localStorage.setItem('theme',t);
+ if(t==='dark'){ document.body.style.background='#111'; document.body.classList.remove('now'); }
+ else if(t==='now'){ document.body.classList.add('now'); }
+ else{ document.body.style.background='#e8e2df'; document.body.classList.remove('now'); }
+ localStorage.setItem('theme',t);
 }
 
 (function(){
-  const saved=localStorage.getItem('theme');
-  if(saved==='dark') document.body.classList.add('dark');
-  if(saved==='now') document.body.classList.add('now');
+ const saved=localStorage.getItem('theme');
+ if(saved==='dark') document.body.style.background='#111';
+ if(saved==='now') document.body.classList.add('now');
 })();
+ else{ document.body.style.background='#e8e2df'; }
+}
 </script>
 
 </body>
 </html>
+
 
